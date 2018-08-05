@@ -38,7 +38,7 @@ class Board
     grid.each_with_index do |row, row_idx|
       grid[row_idx] = init[0] if row_idx == 0
       grid[row_idx] = init[1] if row_idx == 1
-      grid[row_idx] = init[4].dup if row_idx > 1 && row_idx < 6
+      grid[row_idx] = init[4].dup if row_idx.between?(2, 5)
       grid[row_idx] = init[2] if row_idx == 6
       grid[row_idx] = init[3] if row_idx == 7
     end
@@ -47,13 +47,18 @@ class Board
   def move_piece(start_pos, end_pos)
     piece = self[start_pos]
     raise "Can't move nil" if piece.instance_of?(NullPiece)
-    if piece.moves.include?(end_pos)
-      self.previous_move = [start_pos, end_pos]
-      self.previous_piece = self[end_pos]
-      piece.pos = end_pos
-      self[end_pos] = piece
-      self[start_pos] = NullPiece.instance
+    if piece.valid_moves.include?(end_pos)
+      move_piece!(start_pos, end_pos)
     end
+  end
+
+  def move_piece!(start_pos, end_pos)
+    piece = self[start_pos]
+    self.previous_move = [start_pos, end_pos]
+    self.previous_piece = self[end_pos]
+    piece.pos = end_pos
+    self[end_pos] = piece
+    self[start_pos] = NullPiece.instance
   end
 
   def in_check?(color)
@@ -78,7 +83,7 @@ class Board
         if piece.color == color
           moves = piece.moves
           moves.each do |move|
-            move_piece(piece.pos, move)
+            move_piece!(piece.pos, move)
             numMoves += 1 unless in_check?(color)
             undo
           end
@@ -87,6 +92,17 @@ class Board
     end
 
     numMoves.zero?
+  end
+
+  def move_into_check?(start_pos, end_pos)
+    output = false
+
+    color = self[start_pos].color
+    move_piece!(start_pos, end_pos)
+    output = true if in_check?(color)
+    undo
+
+    output
   end
 
   def undo

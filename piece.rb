@@ -13,6 +13,10 @@ class Piece
 
   end
 
+  def valid_moves
+    moves.reject { |end_pos| board.move_into_check?(pos, end_pos)}
+  end
+
   def to_s
     " #{symbol} "
   end
