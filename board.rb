@@ -19,7 +19,7 @@ class Board
   end
 
   def move_piece(start_pos, end_pos)
-    raise "Can't move nil" if self[start_pos] == nil
+    raise "Can't move nil" if self[start_pos] == nil # || illegal move
     self[end_pos] = self[start_pos]
     self[start_pos] = nil
   end
@@ -33,6 +33,11 @@ class Board
         end
       end
     end
+  end
+
+  def self.valid_pos?(pos)
+    r, c = pos
+    (r <= 7 && r >= 0) && (c <= 7 && c >= 0)
   end
 
 end
