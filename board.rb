@@ -7,14 +7,22 @@ require_relative 'bishop'
 require_relative 'knight'
 require_relative 'pawn'
 
+OPP_COLOR = {
+  white: :black,
+  black: :white
+}
+
 class Board
 
   def initialize
     @grid = Array.new(8) { Array.new(8) }
+    @previous_move = nil
+    @previous_piece = nil
     populate_board
   end
 
   attr_reader :grid
+  attr_accessor :previous_move, :previous_piece
 
   def []=(pos, piece)
     grid[pos[0]][pos[1]] = piece
@@ -23,17 +31,6 @@ class Board
   def [](pos)
     grid[pos[0]][pos[1]]
   end
-
-  def move_piece(start_pos, end_pos)
-    piece = self[start_pos]
-    raise "Can't move nil" if piece.instance_of?(NullPiece)
-    if piece.moves.include?(end_pos)
-      piece.pos = end_pos
-      self[end_pos] = piece
-      self[start_pos] = NullPiece.instance
-    end
-  end
-
 
   def populate_board
     init = default_rows
@@ -45,6 +42,70 @@ class Board
       grid[row_idx] = init[2] if row_idx == 6
       grid[row_idx] = init[3] if row_idx == 7
     end
+  end
+
+  def move_piece(start_pos, end_pos)
+    piece = self[start_pos]
+    raise "Can't move nil" if piece.instance_of?(NullPiece)
+    if piece.moves.include?(end_pos)
+      self.previous_move = [start_pos, end_pos]
+      self.previous_piece = self[end_pos]
+      piece.pos = end_pos
+      self[end_pos] = piece
+      self[start_pos] = NullPiece.instance
+    end
+  end
+
+  def in_check?(color)
+    king_pos = nil
+    grid.each do |row|
+      row.each do |piece|
+        if piece.color == color && piece.is_a?(King)
+          king_pos = piece.pos
+          break
+        end
+      end
+    end
+
+    return all_moves(OPP_COLOR[color]).include?(king_pos)
+  end
+
+  def checkmate?(color)
+    numMoves = 0
+    return false unless in_check?(color)
+    grid.each do |row|
+      row.each do |piece|
+        if piece.color == color
+          moves = piece.moves
+          moves.each do |move|
+            move_piece(piece.pos, move)
+            numMoves += 1 unless in_check?(color)
+            undo
+          end
+        end
+      end
+    end
+
+    numMoves.zero?
+  end
+
+  def undo
+    piece = self[previous_move[1]]
+    piece.pos = previous_move[0]
+    self[previous_move[0]] = piece
+    self[previous_move[1]] = previous_piece
+  end
+
+  def all_moves(color)
+    moves = []
+    grid.each do |row|
+      row.each do |piece|
+        next unless piece.color == color
+        moves.concat(piece.moves)
+      end
+    end
+
+    moves
   end
 
   def self.valid_pos?(pos)

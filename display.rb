@@ -23,25 +23,17 @@ class Display
     board.grid.each_with_index do |row, i|
       bg_color_key = !bg_color_key
 
-      pieces_in_row = []
-      row.each do |piece|
-        pieces_in_row << piece.to_s
-      end
-
-      pieces_in_row.each_with_index do |piece_str, j|
+      row.each_with_index do |piece, j|
+        bg_color = BG_COLORS[bg_color_key]
         color = board[[i, j]].color
-        if cursor.cursor_pos == [i, j]
-          if cursor.selected
-            color = :magenta
-          else
-            color = :green
-          end
+        color = :green if cursor.cursor_pos == [i, j]
+        if piece.color == nil && cursor.cursor_pos == [i, j]
+          bg_color = :green
+        elsif piece.color && cursor.selected_pos == [i, j]
+          bg_color = :magenta
         end
-        if piece_str == "   " && cursor.cursor_pos == [i, j]
-          print piece_str.colorize(background: :green)
-        else
-          print piece_str.colorize(color: color, background: BG_COLORS[bg_color_key])
-        end
+
+        print piece.to_s.colorize(color: color, background: bg_color)
         bg_color_key = !bg_color_key
       end
       puts "\n"
@@ -51,8 +43,9 @@ class Display
 
   def input_loop
     start_pos = nil
-    while true #until game over, really
+    until board.checkmate?(:white) || board.checkmate?(:black)
       render
+
       cursor_output = cursor.get_input
       if cursor_output.is_a?(Array) #this means we've selected a piece
         if start_pos
@@ -63,6 +56,10 @@ class Display
         end
       end
     end
+
+    render
+    puts "Checkmate, white wins!" if board.checkmate?(:black)
+    puts "Checkmate, black wins!" if board.checkmate?(:white)
   end
 
 

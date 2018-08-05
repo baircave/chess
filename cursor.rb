@@ -33,12 +33,13 @@ MOVES = {
 class Cursor
 
   attr_reader :cursor_pos, :board
-  attr_accessor :selected
+  attr_accessor :selected, :selected_pos
 
   def initialize(cursor_pos, board)
     @cursor_pos = cursor_pos
     @board = board
     @selected = false
+    @selected_pos = []
   end
 
   def get_input
@@ -49,30 +50,18 @@ class Cursor
   private
 
   def read_char
-    STDIN.echo = false # stops the console from printing return values
+    STDIN.echo = false
+    STDIN.raw!
 
-    STDIN.raw! # in raw mode data is given as is to the program--the system
-                 # doesn't preprocess special characters such as control-c
-
-    input = STDIN.getc.chr # STDIN.getc reads a one-character string as a
-                             # numeric keycode. chr returns a string of the
-                             # character represented by the keycode.
-                             # (e.g. 65.chr => "A")
+    input = STDIN.getc.chr
 
     if input == "\e" then
-      input << STDIN.read_nonblock(3) rescue nil # read_nonblock(maxlen) reads
-                                                   # at most maxlen bytes from a
-                                                   # data stream; it's nonblocking,
-                                                   # meaning the method executes
-                                                   # asynchronously; it raises an
-                                                   # error if no data is available,
-                                                   # hence the need for rescue
-
+      input << STDIN.read_nonblock(3) rescue nil
       input << STDIN.read_nonblock(2) rescue nil
     end
 
-    STDIN.echo = true # the console prints return values again
-    STDIN.cooked! # the opposite of raw mode :)
+    STDIN.echo = true
+    STDIN.cooked!
 
     return input
   end
@@ -102,6 +91,13 @@ class Cursor
   end
 
   def toggle_selected
-    @selected = !@selected
+    if board[cursor_pos].color == nil || self.selected
+      self.selected = false
+      self.selected_pos = []
+    elsif !self.selected
+      self.selected = true
+      self.selected_pos = self.cursor_pos.dup
+    end
   end
+
 end
