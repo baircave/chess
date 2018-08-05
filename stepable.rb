@@ -1,13 +1,13 @@
 require_relative 'board'
 require_relative 'null_piece'
 
-module Slideable
+module Stepable
 
   def moves
     moves = []
-
     possible_steps.each do |offset_r, offset_c|
-      moves.concat(check_step(offset_r, offset_c))
+      move = check_step(offset_r, offset_c)
+      moves << move if move
     end
 
     moves
@@ -24,12 +24,10 @@ module Slideable
 
     return unless Board.valid_pos?([r, c])
 
-    piece = board[[offset_r, offset_c]]
+    piece = board[[r, c]]
 
-    if piece.instance_of(NullPiece) || piece.color != color
-      return [[r, c]]
-    else
-      return []
+    if piece.instance_of?(NullPiece) || piece.color != color
+      return [r, c]
     end
   end
 

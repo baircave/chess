@@ -80,13 +80,11 @@ class Cursor
   def handle_key(key)
     case key
     when :up, :down, :left, :right
-      # selected = true
       update_pos(key)
       nil
     when :ctrl_c
       Process.exit(0)
     when :return, :space
-      # selected = false
       toggle_selected
       cursor_pos
     end

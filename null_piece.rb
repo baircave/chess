@@ -9,4 +9,8 @@ class NullPiece < Piece
     @color = nil
   end
 
+  def symbol
+    @symbol
+  end
+
 end

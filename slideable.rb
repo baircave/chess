@@ -37,9 +37,10 @@ module Slideable
     while true
       r += offset_r
       c += offset_c
+      return moves unless Board.valid_pos?([r, c])
+
       piece = board[[r, c]]
 
-      return moves unless Board.valid_pos?([r, c])
 
       if piece.instance_of?(NullPiece)
         moves << [r, c]
