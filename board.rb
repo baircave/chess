@@ -44,11 +44,15 @@ class Board
     end
   end
 
-  def move_piece(start_pos, end_pos)
+  def move_piece(color, start_pos, end_pos)
     piece = self[start_pos]
     raise "Can't move nil" if piece.instance_of?(NullPiece)
+    raise "Can't move the other player's pieces" if color != piece.color
+    raise "Can't move into check!" if move_into_check?(start_pos, end_pos)
     if piece.valid_moves.include?(end_pos)
       move_piece!(start_pos, end_pos)
+    else
+      raise "Can't move that piece there."
     end
   end
 

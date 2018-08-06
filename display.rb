@@ -40,34 +40,4 @@ class Display
     end
   end
 
-
-  def input_loop
-    start_pos = nil
-    until board.checkmate?(:white) || board.checkmate?(:black)
-      render
-
-      cursor_output = cursor.get_input
-      if cursor_output.is_a?(Array) #this means we've selected a piece
-        if start_pos
-          board.move_piece(start_pos, cursor_output.dup)
-          start_pos = nil
-        elsif board[cursor_output].color != nil #it's a non-null piece
-          start_pos = cursor_output.dup
-        end
-      end
-    end
-
-    render
-    puts "Checkmate, white wins!" if board.checkmate?(:black)
-    puts "Checkmate, black wins!" if board.checkmate?(:white)
-  end
-
-
-
 end
-
-b = Board.new
-d = Display.new(b)
-# d.render
-
-d.input_loop
