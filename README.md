@@ -1,13 +1,13 @@
 # Chess
 
 ## Summary/Instructions
-This implementation of chess was made in Ruby and was designed to be played by two human players in the terminal. Assuming you have Ruby and Homebrew installed on your computer, then simply download the files in this repository, navigate to that directory in your terminal, run `bundle install`, and then run `ruby game.rb` to play. To exit the program, use 'ctrl+c'. To select pieces to move, navigate using the arrow keys, use either enter or space to select, and confirm a new space by pressing enter/space again.
+This implementation of chess was made in Ruby and was designed to be played by two human players in the terminal. Assuming you have Ruby and Homebrew installed on your computer, then simply download the files in this repository, navigate to that directory in your terminal, run `bundle install`, and then run `ruby game.rb` to play. To exit the program, use `CTRL+c`. To select pieces to move, navigate using the arrow keys, use either enter or space to select, and confirm a new space by pressing enter/space again.
 
 ## Inheritance/Modules
 Chess is a game in which all pieces share certain similarities but not others. Though this is fairly obvious, it's an important consideration to make when creating a class inheritance structure for pieces that keeps the code as DRY as possible. The `piece` superclass gives us a blueprint for commonalities such as piece color, its symbol, and a reference to the board. It also defines a `move` method to be overwritten by its subclasses. While all pieces can move around the board and take enemy pieces, they do so in very different ways. For this reason I created `stepable` and `slideable` modules which allow me to reuse code that is shared between rooks, queens, bishops, kings, and knights. For `slideable` pieces, the rook, queen, and bishop subclasses need only define the directions in which they can possibly slide. For `stepable` pieces, the king and knight subclasses simply define the positions to which they can possibly step. From there, the respective modules handle all of the logic for returning a piece's possible moves from a given board state.
 
-### slideable's moves method:
 ```ruby
+#from Slideable module:
 def moves
   moves = []
 
@@ -76,7 +76,7 @@ end
 ```
 
 ## Gameplay/UI
-Since this version of chess is currently designed to be played by two human players on one machine, the `current_player` is simply represented by two symbols: `:black` and `:white`. The UI uses minimal Unicode chess pieces with a cursor that is controlled via the arrow, space, and enter keys. The colorize gem differentiates the game pieces and creates the checkered pattern. The game will simply alternate back and forth between black and white until the game ends (when one color is in checkmate) or until it sees `CTRL+c`. 
+Since this version of chess is currently designed to be played by two human players on one machine, the `current_player` is simply represented by two symbols: `:black` and `:white`. The UI uses minimal Unicode chess pieces with a cursor that is controlled via the arrow, space, and enter keys. The colorize gem differentiates the game pieces and creates the checkered pattern. The game will simply alternate back and forth between black and white until the game ends (when one color is in checkmate) or until it sees `CTRL+c`.
 
 ## Upcoming Features
 * Castling
