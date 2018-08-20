@@ -10,7 +10,7 @@ class Piece
   end
 
   def moves
-
+    #defined by subclasses
   end
 
   def valid_moves

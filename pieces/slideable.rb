@@ -27,10 +27,6 @@ module Slideable
     moves
   end
 
-  def move_dirs
-
-  end
-
   def moves_in_one_direction(offset_r, offset_c)
     r, c = pos
     moves = []
@@ -49,6 +45,10 @@ module Slideable
         return moves
       end
     end
+  end
+
+  def move_dirs
+
   end
 
 end
